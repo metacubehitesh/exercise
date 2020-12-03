@@ -1,0 +1,28 @@
+public class StudentTest {
+    public static List<Student__c> getStudentByClass(String classId){
+        List<Student__c> students = [select Name from Student__c where Class__c =:classId];
+        return students;
+    }
+    
+    public static Map<Id, List<Id>> getStudentIdsByClassAsMap(String classId){
+        Map<Id, List<Id>> mapList = new Map<Id, List<Id>>();
+        Map<Id, Student__c> studentsMap = new Map<Id, Student__c>([select Name, Id from Student__c where Class__c =:classId]);
+        List<Id> students = new List<Id>();
+        students.addAll(studentsMap.keySet());
+        mapList.put(classId, students);
+        return mapList;
+    }
+    
+    public static Integer getWorkingDayCountBetweenTwoDates(Date startDate, Date endDate){
+        Integer totalDays = startDate.daysBetween(endDate);
+        Date nextDate = startDate;
+        Integer numberOfWorkingDays = 0;
+        for(Integer i=1; i<totalDays; i++){
+            DateTime dt = nextDate.addDays(i);
+            String dayOfWeek=dt.format('EEEE');
+            if(!(dayOfWeek.equals('Saturday') || dayOfWeek.equals('Sunday')))
+                numberOfWorkingDays++;
+        }
+        return numberOfWorkingDays;
+    }
+}

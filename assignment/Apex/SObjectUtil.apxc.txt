@@ -1,0 +1,8 @@
+public class SObjectUtil {
+	public static List<String> getSOjectExistsInOrg(){
+        Map<String, Schema.SObjectType> mapOfObjects = Schema.getGlobalDescribe();
+        List<String> sObjectList = new List<String>();
+        sObjectList.addAll(mapOfObjects.keySet());
+        return sObjectList;
+    }
+}
