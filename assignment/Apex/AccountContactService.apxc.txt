@@ -1,0 +1,50 @@
+public class AccountContactService {
+    
+    public static void addContactIdToAccount(Id contactId){
+        String contactIdLikeClause = '%'+contactId+'%';
+        Account accountDetail;
+        try{
+        	accountDetail = [select Id, ContactIDs__c from Account where ContactIDs__c like :contactIdLikeClause];
+    	}catch(System.QueryException e){
+            accountDetail = null;
+    	}
+        
+        //if contactid is already present with account then return 
+        if(accountDetail != null){
+            return;
+        }
+        
+        Contact contactDetail = fetchContactById(contactId);
+        //if contact is not valid then return
+        if( contactDetail == null || contactDetail.AccountId == null){
+            return;
+        }
+        
+        Account accountDetailToUpdated = [select Id, ContactIDs__c from Account where Id =:contactDetail.AccountId];
+        if (accountDetailToUpdated.ContactIDs__c == null || String.isBlank(accountDetailToUpdated.ContactIDs__c)){
+        	addContactIdsToAccount(accountDetailToUpdated, contactDetail);
+        } else {
+            accountDetailToUpdated.ContactIDs__c = accountDetailToUpdated.ContactIDs__c + ',' +contactDetail.Id;
+        }
+        update accountDetailToUpdated;
+    }
+    
+    public static Contact fetchContactById(Id contactId){
+        return [select Id, AccountId from Contact where Id =:contactId];
+    }
+    
+    public static void addContactIdsToAccount(Account accountDetailToUpdated, Contact contactDetail){
+        String contactIds = '';
+        //fetching all contact mapped with accountid then appending id in contactIds which will be updaed to account
+        for(Contact cont : [select Id from Contact where AccountId =:contactDetail.AccountId]){
+            Id contactId = cont.Id;
+            if(String.isBlank(contactIds)){
+                contactIds = ''+contactId;
+            } else {
+                contactIds = contactIds + ',' +contactId;
+            }
+        }
+        accountDetailToUpdated.ContactIDs__c = contactIds;
+    }
+
+}
