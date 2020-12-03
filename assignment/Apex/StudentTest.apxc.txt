@@ -1,16 +1,19 @@
 public class StudentTest {
-    public static List<Student__c> getStudentByClass(String classId){
-        List<Student__c> students = [select Name from Student__c where Class__c =:classId];
+    public static List<String> getStudentByClass(String classId){
+        List<String> students = new List<String>();
+        for(Student__c st : [select Name from Student__c where Class__c =:classId]){
+            students.add(st.Name);
+        }
         return students;
     }
     
     public static Map<Id, List<Id>> getStudentIdsByClassAsMap(String classId){
-        Map<Id, List<Id>> mapList = new Map<Id, List<Id>>();
+        Map<Id, List<Id>> classStudentMap = new Map<Id, List<Id>>();
         Map<Id, Student__c> studentsMap = new Map<Id, Student__c>([select Name, Id from Student__c where Class__c =:classId]);
         List<Id> students = new List<Id>();
         students.addAll(studentsMap.keySet());
-        mapList.put(classId, students);
-        return mapList;
+        classStudentMap.put(classId, students);
+        return classStudentMap;
     }
     
     public static Integer getWorkingDayCountBetweenTwoDates(Date startDate, Date endDate){

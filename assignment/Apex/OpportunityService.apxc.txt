@@ -1,0 +1,12 @@
+public class OpportunityService {
+    
+    public static void updateManagerForOpportunity(List<Opportunity> oppList){
+        for(Opportunity opp : oppList){
+            if(opp.BillToContact__c != null){
+                Contact cont = [select Id, AccountId from Contact where Id = :opp.BillToContact__c];
+                opp.Manager__c = cont.AccountId;
+            }
+        }
+        update oppList;
+    }
+}

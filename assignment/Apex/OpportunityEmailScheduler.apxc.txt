@@ -1,0 +1,21 @@
+public class OpportunityEmailScheduler implements 
+	Database.Batchable<sObject>, Database.Stateful {
+        
+        public Database.QueryLocator start(Database.BatchableContext bc) {
+            return Database.getQueryLocator('select Id, OwnerId from Opportunity where LastModifiedDate < LAST_N_DAYS:6');
+        }
+         
+        public void execute(Database.BatchableContext bc, List<Opportunity> scope){
+            for(Opportunity opp : scope){
+                System.debug(opp);
+            }
+        }
+        
+        public void finish(Database.BatchableContext bc){
+            AsyncApexJob job = [SELECT Id, Status, NumberOfErrors,
+            JobItemsProcessed,
+            TotalJobItems, CreatedBy.Email
+            FROM AsyncApexJob
+            WHERE Id = :bc.getJobId()];
+        }
+}

@@ -1,0 +1,5 @@
+trigger UpdateOfOpportunity on Opportunity (after insert, after update) {
+    
+	OpportunityService.updateManagerForOpportunity([select Id, BillToContact__c, Manager__c from Opportunity where BillToContact__c != null and Manager__c = null]);
+    
+}
