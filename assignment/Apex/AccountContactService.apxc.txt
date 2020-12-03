@@ -21,7 +21,11 @@ public class AccountContactService {
         }
         
         Account accountDetailToUpdated = [select Id, ContactIDs__c from Account where Id =:contactDetail.AccountId];
-        addContactIdsToAccount(accountDetailToUpdated, contactDetail);
+        if (accountDetailToUpdated.ContactIDs__c == null || String.isBlank(accountDetailToUpdated.ContactIDs__c)){
+        	addContactIdsToAccount(accountDetailToUpdated, contactDetail);
+        } else {
+            accountDetailToUpdated.ContactIDs__c = accountDetailToUpdated.ContactIDs__c + ',' +contactDetail.Id;
+        }
         update accountDetailToUpdated;
     }
     
