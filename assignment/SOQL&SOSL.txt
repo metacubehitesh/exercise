@@ -1,0 +1,32 @@
+SOQL : 
+1. select Name, DOB__c, Sex__c from Student__c where LastName__c like 'S%'
+
+2. select Name, DOB__c, Sex__c from Student__c where Class__r.Name like 'X%'
+
+3. select Name, DOB__c, Sex__c, Class__r.Name from Student__c  
+	or
+   select Name, (select Name from Students__r) from Class__c
+
+4. select Name, (select Name from Students__r) from Class__c
+
+5. select Name from Student__c where Class__c in (select Class__c from Teach__c where Teacher__r.Name like 'S%') 
+
+6. select Name, DOB__c, Sex__c from Student__c where CALENDAR_YEAR(DOB__c) > 2000
+
+7. select Name, LastModifiedDate from Lead where LastModifiedDate = THIS_MONTH
+
+8. select Name, (select Name from Students__r where Name like 'R%') from Class__c 
+
+9. select Name from Student__c where Class__c in (select Class__c from Teach__c where Subject__c includes ('Hindi;Maths'))
+
+10.select Class__r.Name, COUNT(Id) from Student__c group by Class__r.Name
+
+11.select count(Id), DOB__c, Calendar_Month(DOB__c) from Student__c Group By Calendar_Month(DOB__c) order by count(Id) asc
+
+
+SOSL : 
+1. FIND {bhakt} IN Name FIELDS RETURNING Student__c(Name), Contact(Name)
+2. FIND {Jassy} IN Name FIELDS RETURNING Student__c(Name where Sex__c = 'Male'), Contact(Name)
+
+
+
