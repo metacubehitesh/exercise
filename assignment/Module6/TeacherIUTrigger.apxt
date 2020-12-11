@@ -1,0 +1,14 @@
+trigger TeacherIUTrigger on Contact (before insert, before update) {
+	List<Contact> contacts;
+    if(Trigger.isInsert){
+        contacts = Trigger.New;
+    } else {
+        contacts = Trigger.Old;
+    }
+    
+    for (Contact con : contacts){
+        if(con.subject__c.contains('Hindi')){
+            con.addError('Subject contains Hindi');
+        }
+    }
+}

@@ -1,0 +1,12 @@
+trigger ClassMyCountTrigger on Student__c (after insert, after update) {
+    Set<Class__c> setClass = new Set<Class__c>();
+    for (Student__c st : Trigger.New){
+        Class__c cls = [select Id, MyCount__c from Class__c where Id = :st.Class__c];
+        Integer count = [select count() from Student__c where class__c = :st.Class__c];
+        cls.MyCount__c = count;
+        setClass.add(cls);
+    }
+    List<Class__c> clsList = new List<Class__c>();
+    clsList.addAll(setClass);
+    update clsList;
+}

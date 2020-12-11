@@ -1,0 +1,11 @@
+trigger ClassStatusTrigger on Class__c (after update) {
+    for(Class__c cls : Trigger.New){
+        if(cls.Custom_Status__c == 'Reset'){
+            try{
+            	delete [select Id from Student__c where Class__c = :cls.Id];
+            } catch(Exception e){
+                
+            }
+        }
+    }
+}

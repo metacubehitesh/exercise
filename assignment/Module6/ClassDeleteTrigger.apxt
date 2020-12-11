@@ -1,0 +1,8 @@
+trigger ClassDeleteTrigger on Class__c (before delete) {
+    for(Class__c clazz : Trigger.Old){
+        Integer records = [select count() from Student__c where Class__c = :clazz.Id and Sex__c = 'Female'];
+        if(records>1){
+            clazz.addError('Class is having more than one female student(s)');
+        }
+    }
+}
