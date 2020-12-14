@@ -1,9 +1,8 @@
 trigger StudentClassSizeTrigger on Student__c (before insert) {
-    for(Student__c s : Trigger.New){
-        Class clazz = [select MaxSize from Class__c where Id = :s.Class__c];
-        Integer count = [select count() from Student__c where Class__c = :s.Class__c];
-        if(count >= clazz.MaxSize){
-            s.addError('Class Reached MaxLimit.');
-        }
+    Student__c st = Trigger.New[0];
+    Class__c clazz = [select MaxSize__c from Class__c where Id = :st.Class__c];
+    Integer stCount = [select count() from Student__c where Class__c = :st.Class__c];
+    if(stCount >= clazz.MaxSize__c){
+    	st.addError('Class Reached MaxLimit.');
     }
 }
