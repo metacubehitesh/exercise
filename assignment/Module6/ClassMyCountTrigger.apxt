@@ -4,14 +4,11 @@ trigger ClassMyCountTrigger on Student__c (after insert, after update) {
         classIdSet.add(st.class__c);
     }
     
-    List<Id> classIds = new List<String>();
-    classIds.addAll(classIdSet);
-    
-    Map<Id,Class__c> clsMap = new Map<Id,Class__c>([select Id, MyCount__c from Class__c where Id in :classIds]);
+    Map<Id,Class__c> clsMap = new Map<Id,Class__c>([select Id, MyCount__c from Class__c where Id in :classIdSet]);
     List<AggregateResult> listStudentCountByClass = new List<AggregateResult>(
         [select count(Id) recordCount, 
          class__c classId from student__c 
-         where class__c in :classIds
+         where class__c in :classIdSet
          group by class__c]
     );
     

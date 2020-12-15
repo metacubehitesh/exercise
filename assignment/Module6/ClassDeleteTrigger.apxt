@@ -1,13 +1,12 @@
 trigger ClassDeleteTrigger on Class__c (before delete) {
-    List<Class__c> classes = Trigger.Old;
+    Map<Id, Class__c> classAsMap = Trigger.OldMap;
     List<Id> classIds = new List<String>();
-    for(Class__c cls : classes){
-        classIds.add(cls.Id);
-    }
+    classIds.addAll(classAsMap.keySet());
 	List<AggregateResult> listCount = new List<AggregateResult>([select count(Id) recordCount, class__c classId from student__c where class__c in :classIds and sex__c = 'Female' group by class__c ]);
     for(AggregateResult rs : listCount){
         if(((Integer)rs.get('recordCount'))>1){
-            Class__c clazz = classes.get(0);
+            Id id = (Id)rs.get('classId');
+            Class__c clazz = classAsMap.get(id);
             clazz.addError('Class is having more than one female student(s)');
         }
     }
