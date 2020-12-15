@@ -1,0 +1,9 @@
+trigger OpportunityCloseDateTrigger on Opportunity (before update) {
+    for(Opportunity op : Trigger.New){
+        Opportunity oldOp = Trigger.OldMap.get(op.Id);
+        String stage = op.StageName;
+        if((stage=='Closed Won' || stage=='Closed Lost') && oldOp.StageName != stage){
+         	op.CloseDate = Date.today();   
+        }
+    }	
+}
