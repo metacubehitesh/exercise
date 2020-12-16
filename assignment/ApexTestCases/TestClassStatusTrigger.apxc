@@ -1,0 +1,22 @@
+@isTest
+public class TestClassStatusTrigger {
+	@isTest
+    static void testClassStatusUpdateAsReset(){
+        List<Class__c> classList = TestDataFactory.createClassWithFemaleStudent(1,1,false);
+        List<Id> ids = new List<Id>();
+        for(Class__c cls : classList){
+            cls.Custom_Status__c = 'Reset';
+            ids.add(cls.Id);
+        }
+        
+        for(Class__c cls : classList){
+            System.debug(cls.Custom_Status__c);
+        }
+       	update classList;
+        
+        Map<Id, Class__c> clsMap = new Map<Id, Class__c>([select Id, Name, (select Id from Students__r) from Class__c where Id in :ids]);
+        for(Id id : clsMap.keySet()){
+            System.assertEquals(1, clsMap.get(id).Students__r.size());
+        }
+    }
+}

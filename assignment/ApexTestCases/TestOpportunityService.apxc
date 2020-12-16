@@ -1,0 +1,25 @@
+@isTest
+public class TestOpportunityService {
+	
+    @isTest
+    static void testUpdateManagerForOpportunity(){
+        Test.startTest();
+        Account acc = TestDataFactory.createAccount();
+        Contact c = TestDataFactory.createContact('lastName', acc.Id);
+        Opportunity opp = new Opportunity(Name = 'Test Account Opp', 
+                                          Amount = 1500, 
+                                          CloseDate = Date.newInstance(2020, 12, 30),
+                                          StageName = 'Qualification',
+                                          AccountId = acc.Id,
+                                         BillToContact__c = c.Id);
+        Database.insert(opp);
+        List<Opportunity> oppList = new List<Opportunity>();
+        oppList.add(opp);
+        OpportunityService.updateManagerForOpportunity(oppList);
+        Opportunity updatedOpp = [select Id, BillToContact__c from Opportunity where Id = :opp.Id];
+        Test.stopTest();
+        
+        System.assertEquals(opp.BillToContact__c, updatedOpp.BillToContact__c);
+    }
+    
+}

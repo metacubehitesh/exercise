@@ -1,0 +1,99 @@
+@isTest
+public class TestDataFactory {
+	
+    public static List<Class__c> createClassWithFemaleStudent(Integer numberClassToBeCreated, Integer numberOfStudentsPerClass, Boolean femaleStudents){
+        List<Class__c> classList = new List<Class__c>();
+        
+        for(Integer i=0;i<numberClassToBeCreated;i++){
+            Class__c c = new Class__c(Name = 'TestClass'+(i+1));
+            classList.add(c);
+        }
+        insert classList;
+        List<Student__c> studentList = crateStudentForClass(numberOfStudentsPerClass, classList, femaleStudents);
+        insert studentList;
+        
+        return classList;
+    }
+    
+    public static List<Student__c> createClassAndStudent(Integer numberStudentsToBeCreated){
+        Class__c c = new Class__c(Name = 'TestClass');
+        insert c;
+        List<Class__c> classes = new List<Class__c>();
+        classes.add(c);
+        return crateStudentForClass(2, classes, false);
+    }
+    
+    public static List<Student__c> crateStudentForClass(Integer numberStudentsToBeCreated, List<Class__c> classList, Boolean flag){
+        List<Student__c> studentList = new List<Student__c>();
+        for(Class__c c : classList){
+            for(Integer j = 0; j<numberStudentsToBeCreated; j++){
+                String nm = c.Name+(j+1);
+                String sex;
+                if(flag){
+                    sex = 'Female';
+                } else {
+                    sex = 'Male';
+                }
+                Student__c s = new Student__c(FirstName__c = nm, LastName__c = nm, Class__c = c.Id, sex__c = sex);
+                studentList.add(s);
+            }
+        }
+        return studentList;
+    }
+    
+    public static Opportunity createOpportunity(){
+        Account acc = new Account(Name = 'Test Account');
+        insert acc;
+        Opportunity opp = new Opportunity(Name = 'Test Account Opp', 
+                                          Amount = 1500, 
+                                          CloseDate = Date.newInstance(2020, 12, 30),
+                                          StageName = 'Qualification',
+                                          AccountId = acc.Id);
+        insert opp;
+        return opp;
+    }   
+    
+    public static Student__c getStudentListToBeInsterted(Integer numberOfClasses,Integer numberOfStudents){
+        Class__c cls = new Class__c(Name = 'Test class 12', MaxSize__c = 1);
+        insert cls;
+        List<Class__c> clss = new List<Class__c>();
+        clss.add(cls);
+        List<Student__c> stList = crateStudentForClass(numberOfStudents, clss, false);
+        insert stList.get(0);
+        return stList.get(1);
+    }
+    
+    public static Student__c getStudentListToBeInstertedWithMaxLimitAs2(Integer numberOfClasses,Integer numberOfStudents){
+        Class__c cls = new Class__c(Name = 'Test class 12', MaxSize__c = 2);
+        insert cls;
+        List<Class__c> clss = new List<Class__c>();
+        clss.add(cls);
+        List<Student__c> stList = crateStudentForClass(numberOfStudents, clss, false);
+        insert stList.get(0);
+        return stList.get(1);
+    }
+    
+    public static Account createAccount(){
+        Account acc = new Account(Name = 'TestTest');
+        insert acc;
+        return acc;
+    }
+    
+    public static Contact createContact(String lastName, Id id){
+        Contact c = new Contact(LastName = lastName, AccountId = id);
+        insert c;
+        return c;
+    }
+    
+    public static Class__c createClassAndStudents(){
+        Class__c cls = new Class__C(Name = 'test class');
+        insert cls;
+        Student__c st1 = new Student__c(Name = 'Test1', FirstName__c='Test1', LastName__c= 'Test1', Class__c = cls.Id);
+        Student__c st2 = new Student__c(Name = 'Test2', FirstName__c='Test2', LastName__c= 'Test2', Class__c = cls.Id);
+        List<Student__c> stList = new List<Student__c>();
+        stList.add(st1);
+        stList.add(st2);
+        insert stList;
+        return cls;
+    }
+}
