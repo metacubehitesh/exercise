@@ -15,16 +15,13 @@ trigger StudentClassSizeTrigger on Student__c (before insert) {
         }
     }
     
-    Map<Id, Class__c> mapClazz = new Map<Id, Class__c>([select Id, MaxSize__c from Class__c where Id in :classIds]);
-    List<AggregateResult> listCount = new List<AggregateResult>(
-        [select count(Id) recordCount, 
-         class__c classId from student__c 
-         where class__c in :classIds group by class__c]);
+    Map<Id, Class__c> mapClazz = new Map<Id, Class__c>(
+        [select Id, MaxSize__c, (select Id from Students__r) from Class__c where Id in :classIds]
+    );
     
-    for(AggregateResult rs : listCount){
-        Id id = (Id)rs.get('classId');
-        if(mapClazz.containsKey(id) 
-           && ((Integer)rs.get('recordCount')) >= mapClazz.get(id).MaxSize__c 
+    for(Id id : mapClazz.keySet()){
+        Class__c cls = mapClazz.get(id);
+        if( cls.Students__r.size() >= cls.MaxSize__c 
            && mapClsStudent.containsKey(id)){
             List<Student__c> stList = mapClsStudent.get(id);
             for(Student__c st : stList){
