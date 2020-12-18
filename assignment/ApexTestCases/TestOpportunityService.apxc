@@ -3,7 +3,7 @@ public class TestOpportunityService {
 	
     @isTest
     static void testUpdateManagerForOpportunity(){
-        Test.startTest();
+        
         Account acc = TestDataFactory.createAccount();
         Contact c = TestDataFactory.createContact('lastName', acc.Id);
         Opportunity opp = new Opportunity(Name = 'Test Account Opp', 
@@ -12,14 +12,14 @@ public class TestOpportunityService {
                                           StageName = 'Qualification',
                                           AccountId = acc.Id,
                                          BillToContact__c = c.Id);
+        
+        Test.startTest();
         Database.insert(opp);
-        List<Opportunity> oppList = new List<Opportunity>();
-        oppList.add(opp);
-        OpportunityService.updateManagerForOpportunity(oppList);
-        Opportunity updatedOpp = [select Id, BillToContact__c from Opportunity where Id = :opp.Id];
+        OpportunityService.updateManagerForOpportunity(new List<Opportunity>{opp});
         Test.stopTest();
         
-        System.assertEquals(opp.BillToContact__c, updatedOpp.BillToContact__c);
+        Opportunity updatedOpp = [select Id, BillToContact__c from Opportunity where Id = :opp.Id];
+        System.assertEquals(opp.Manager__c, acc.Id);
     }
     
 }

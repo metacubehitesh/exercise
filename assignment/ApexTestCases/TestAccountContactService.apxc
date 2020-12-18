@@ -3,21 +3,24 @@ public class TestAccountContactService {
 	
     @isTest
     static void addContactIdToAccount(){
-        Test.startTest();
         Account acc = createAccount();
         Contact c = createContact('test', acc.Id);
+        
+        Test.startTest();
         AccountContactService.addContactIdToAccount(c.Id);
+        Test.stopTest();
+        
         String contactIdLikeClause = '%'+c.Id+'%';
         Account updatedAccount = [select Id, ContactIDs__c from Account where ContactIDs__c like :contactIdLikeClause];
-        Test.stopTest();
         System.assertEquals(updatedAccount.Id, acc.Id);
     }
     
     @isTest
     static void addWrongContactIdToAccount(){
+        Account acc = createAccount();
+        
         Test.startTest();
         try{
-            Account acc = createAccount();
             AccountContactService.addContactIdToAccount(acc.Id+'0');
             String contactIdLikeClause = '%'+acc.Id+'0%';
         	Account updatedAccount = [select Id, ContactIDs__c from Account where ContactIDs__c like :contactIdLikeClause];
@@ -29,13 +32,13 @@ public class TestAccountContactService {
         
     }
     
-    static Account createAccount(){
+    public static Account createAccount(){
         Account acc = new Account(Name = 'TestTest');
         insert acc;
         return acc;
     }
     
-    static Contact createContact(String lastName, Id id){
+    public static Contact createContact(String lastName, Id id){
         Contact c = new Contact(LastName = lastName, AccountId = id);
         insert c;
         return c;

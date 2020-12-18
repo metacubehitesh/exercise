@@ -3,20 +3,14 @@ public class TestClassStatusTrigger {
 	@isTest
     static void testClassStatusUpdateAsReset(){
         List<Class__c> classList = TestDataFactory.createClassWithFemaleStudent(1,1,false);
-        List<Id> ids = new List<Id>();
-        for(Class__c cls : classList){
-            cls.Custom_Status__c = 'Reset';
-            ids.add(cls.Id);
-        }
+        Class__c cls = classList.get(0);
+        cls.Custom_Status__c = 'Reset';
         
-        for(Class__c cls : classList){
-            System.debug(cls.Custom_Status__c);
-        }
-       	update classList;
+        Test.startTest();
+        Database.update(cls);
+        Test.stopTest();
         
-        Map<Id, Class__c> clsMap = new Map<Id, Class__c>([select Id, Name, (select Id from Students__r) from Class__c where Id in :ids]);
-        for(Id id : clsMap.keySet()){
-            System.assertEquals(1, clsMap.get(id).Students__r.size());
-        }
+        Map<Id, Class__c> clsMap = new Map<Id, Class__c>([select Id, Name, (select Id from Students__r) from Class__c where Id = :cls.Id]);
+        System.assertEquals(0, clsMap.get(cls.Id).Students__r.size());
     }
 }
