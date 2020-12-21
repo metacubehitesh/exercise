@@ -1,0 +1,26 @@
+trigger ClassMyCountTrigger on Student__c (after insert, after update) {
+    Set<Id> classIdSet = new Set<Id>();
+    for (Student__c st : Trigger.New){
+        classIdSet.add(st.class__c);
+    }
+    
+    Map<Id,Class__c> clsMap = new Map<Id,Class__c>([select Id, MyCount__c from Class__c where Id in :classIdSet]);
+    List<AggregateResult> listStudentCountByClass = new List<AggregateResult>(
+        [select count(Id) recordCount, 
+         class__c classId from student__c 
+         where class__c in :classIdSet
+         group by class__c]
+    );
+    
+    List<Class__c> clsList = new List<Class__c>();
+    for(AggregateResult ar :listStudentCountByClass){
+        Id classId = (Id)ar.get('classId');
+        if(clsMap.containsKey(classId)){
+        	Class__c c =  clsMap.get(classId);
+            c.MyCount__c = (Integer)ar.get('recordCount');
+            clsList.add(c);
+        }
+    }
+    
+    update clsList;
+}

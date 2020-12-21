@@ -1,0 +1,13 @@
+trigger ClassStatusTrigger on Class__c (before update) {
+    List<Id> clsIds = new List<Id>();
+    for(Class__c cls : Trigger.New){
+        if(cls.Custom_Status__c == 'Reset')
+    	    clsIds.add(cls.Id);
+    }
+    
+    if(clsIds.size()>0){
+        try{
+            delete [select Id from Student__c where Class__c in :clsIds];
+        } catch(Exception e){}
+    }
+}
