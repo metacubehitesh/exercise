@@ -1,0 +1,17 @@
+@isTest
+public class TestOpportunityCloseDateTrigger {
+    @isTest
+    static void testOpportnityCloseDateUpdation(){
+        Opportunity opp = TestDataFactory.createOpportunity();
+        opp.StageName = 'Closed Won';
+        
+        Test.startTest();
+        Database.SaveResult rs = Database.update(opp);
+        Test.stopTest();
+        
+        System.assert(rs.isSuccess());
+        Date currentDate = Date.today();
+        Opportunity updatedOpp = ([select Id, StageName, CloseDate from Opportunity where Id =:opp.Id]);
+        System.assertEquals(currentDate, updatedOpp.CloseDate);
+    }
+}

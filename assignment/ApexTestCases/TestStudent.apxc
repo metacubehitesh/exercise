@@ -1,0 +1,43 @@
+@isTest
+public class TestStudent {
+
+    @isTest
+    static void testGetStudentByClass(){
+        Class__c cls = TestDataFactory.createClassAndStudents();
+        
+        Test.startTest();
+        List<String> studentNames = StudentTest.getStudentByClass(cls.Id);
+        Test.stopTest();
+        Map<Id, Class__c> classMap = new Map<Id, Class__c>([select Id, (select Name from Students__r) from Class__c where Id =:cls.Id]);
+        
+        System.assertEquals(2, studentNames.size());
+        for(Student__c st : classMap.get(cls.Id).Students__r){
+            System.assert(studentNames.contains(st.Name));
+        }
+    }
+    
+    @isTest
+    static void testGetStudentIdsByClassAsMap(){
+        Class__c cls = TestDataFactory.createClassAndStudents();
+
+        Test.startTest();
+        Map<Id, List<Id>> clsStudentMap = StudentTest.getStudentIdsByClassAsMap(cls.Id);
+        Test.stopTest();
+        
+        System.assertEquals(1, clsStudentMap.size());
+        System.assertEquals(2, clsStudentMap.get(cls.Id).size());
+    }
+    
+    @isTest
+    static void testGetWorkingDayCountBetweenTwoDates(){
+        Date dt1 = Date.newInstance(2020, 12, 21);
+		Date dt2 = dt1.addDays(5);   
+        
+        Test.startTest();
+        Integer workingDays = StudentTest.getWorkingDayCountBetweenTwoDates(dt1, dt2);
+        Test.stopTest();
+        
+        System.assertEquals(4, workingDays);
+    }
+    
+}

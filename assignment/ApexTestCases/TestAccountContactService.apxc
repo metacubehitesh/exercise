@@ -1,0 +1,46 @@
+@isTest	
+public class TestAccountContactService {
+	
+    @isTest
+    static void addContactIdToAccount(){
+        Account acc = createAccount();
+        Contact c = createContact('test', acc.Id);
+        
+        Test.startTest();
+        AccountContactService.addContactIdToAccount(c.Id);
+        Test.stopTest();
+        
+        String contactIdLikeClause = '%'+c.Id+'%';
+        Account updatedAccount = [select Id, ContactIDs__c from Account where ContactIDs__c like :contactIdLikeClause];
+        System.assertEquals(updatedAccount.Id, acc.Id);
+    }
+    
+    @isTest
+    static void addWrongContactIdToAccount(){
+        Account acc = createAccount();
+        
+        Test.startTest();
+        try{
+            AccountContactService.addContactIdToAccount(acc.Id+'0');
+            String contactIdLikeClause = '%'+acc.Id+'0%';
+        	Account updatedAccount = [select Id, ContactIDs__c from Account where ContactIDs__c like :contactIdLikeClause];
+        }catch(Exception e){
+            System.assert((e.getMessage().contains('List has no rows for assignment to SObject')
+                           ||e.getMessage().contains('Invalid id:')));
+        }
+        Test.stopTest();
+        
+    }
+    
+    public static Account createAccount(){
+        Account acc = new Account(Name = 'TestTest');
+        insert acc;
+        return acc;
+    }
+    
+    public static Contact createContact(String lastName, Id id){
+        Contact c = new Contact(LastName = lastName, AccountId = id);
+        insert c;
+        return c;
+    }
+}

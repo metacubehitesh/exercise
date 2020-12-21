@@ -1,0 +1,16 @@
+@isTest
+public class TestClassStatusTrigger {
+	@isTest
+    static void testClassStatusUpdateAsReset(){
+        List<Class__c> classList = TestDataFactory.createClassWithFemaleStudent(1,1,false);
+        Class__c cls = classList.get(0);
+        cls.Custom_Status__c = 'Reset';
+        
+        Test.startTest();
+        Database.update(cls);
+        Test.stopTest();
+        
+        Map<Id, Class__c> clsMap = new Map<Id, Class__c>([select Id, Name, (select Id from Students__r) from Class__c where Id = :cls.Id]);
+        System.assertEquals(0, clsMap.get(cls.Id).Students__r.size());
+    }
+}

@@ -1,0 +1,24 @@
+@isTest
+public class TestTeacherIUTrigger {
+	
+    @isTest
+    static void testTeacherWithSubjectAsHindi(){
+        Contact c = new Contact(LastName = 'Test', subject__c = 'Hindi');
+        Test.startTest();
+        try{
+            Database.insert(c);
+        }catch(Exception e){
+            System.assert(e.getMessage().contains('Subject contains Hindi'));
+        }
+        Test.stopTest();
+    }
+    
+    @isTest
+    static void testTeacherWithSubjectAsEnglish(){
+        Contact c = new Contact(LastName = 'Test', subject__c = 'English');
+        Test.startTest();
+        Database.SaveResult sr = Database.insert(c);
+        Test.stopTest();
+        System.assert(sr.isSuccess());
+    }
+}

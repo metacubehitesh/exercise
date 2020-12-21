@@ -1,0 +1,16 @@
+@isTest
+public class TestClassMyCountTrigger {
+	
+   	@isTest
+    static void testClassMyCountTrigger(){
+       List<Student__c> studentList = TestDataFactory.createClassAndStudent(2);
+        
+       Test.startTest();
+       Database.SaveResult[] sr = Database.insert(studentList);
+       Test.stopTest(); 
+        
+       Class__c cls = [select Id, MyCount__c from Class__c where Id = :studentList.get(0).class__c];
+       System.assertEquals(cls.MyCount__c, studentList.size());
+    }
+    
+}

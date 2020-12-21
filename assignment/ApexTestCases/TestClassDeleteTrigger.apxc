@@ -1,0 +1,31 @@
+@isTest
+public class TestClassDeleteTrigger {
+	
+    @isTest
+    static void testClassDeleteWithMoreThenOneFemaleStudents(){
+       List<Class__c> classList = TestDataFactory.createClassWithFemaleStudent(1, 2, true);
+       
+       Test.startTest();
+       Database.DeleteResult rs = Database.delete(classList.get(0), false);
+       Test.stopTest();
+        
+       if(!rs.isSuccess()){
+           Database.Error er = rs.getErrors().get(0);
+           System.assertEquals('Class is having more than one female student(s)', er.getMessage());
+       }
+    }
+    
+    @isTest
+    static void testClassDeleteWithMoreThenOneMaleStudents(){
+       List<Class__c> classList = TestDataFactory.createClassWithFemaleStudent(1, 2, false);
+       
+       Test.startTest();
+       Database.DeleteResult rs = Database.delete(classList.get(0), false);
+       Test.stopTest();
+        
+       if(rs.isSuccess()){
+           System.assert(rs.isSuccess());
+       }
+    }
+    
+}

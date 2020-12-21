@@ -1,0 +1,24 @@
+@isTest
+public class TestStudentClassSizeTrigger {
+	@isTest
+    static void testStudentClassMaxSizeRestrictionWithFailure(){
+        Student__c student = TestDataFactory.getStudentListToBeInsterted(1,2);
+        Test.startTest();
+        try{
+            Database.insert(student);
+        }catch(Exception e){
+            System.assert(e.getMessage().contains('Class Reached MaxLimit.'));
+        }
+        Test.stopTest();
+    }
+    
+    @isTest
+    static void testStudentClassMaxSizeRestrictionWithSuccess(){
+        Student__c student = TestDataFactory.getStudentListToBeInstertedWithMaxLimitAs2(1,2);
+        Test.startTest();
+        Database.SaveResult sr = Database.insert(student);
+        Test.stopTest();
+        System.assert(sr.isSuccess());
+    }
+    
+}
