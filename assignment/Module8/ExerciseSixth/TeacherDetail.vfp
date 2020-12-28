@@ -1,0 +1,26 @@
+<apex:page standardController="Contact">
+    <apex:form>
+        <apex:pageBlock title="Teacher Detail">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="Edit"/>
+                <apex:commandButton value="Delete"/>
+                <apex:commandButton value="Clone"/>
+            </apex:pageBlockButtons>
+            
+			<apex:include pageName="TeacherRecord"/>
+            
+            <apex:pageBlockSection>
+                <apex:outputField value="{!Contact.OwnerId}"/>
+                <apex:outputField value="{!Contact.Name}"/>
+                <apex:outputField value="{!Contact.Account.Name}"/>
+                <apex:outputField value="{!Contact.Title}"/>
+                <apex:outputField value="{!Contact.Department}"/>
+                <apex:outputField value="{!Contact.Phone}"/>
+                <apex:outputField value="{!Contact.HomePhone}"/>
+                <apex:outputField value="{!Contact.MobilePhone}"/>
+                <apex:outputField value="{!Contact.OtherPhone}"/>
+                <apex:outputField value="{!Contact.Fax}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>    
+    </apex:form>
+</apex:page>

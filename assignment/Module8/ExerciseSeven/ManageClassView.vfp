@@ -1,0 +1,41 @@
+<apex:page Controller="ManageClassController">
+	<apex:form id="classTable">
+        <apex:pageBlock title="Classes">
+            <apex:pageBlockTable value="{!classList}" var="cls">
+                <apex:column value="{!cls.Name}"/>
+                <apex:column value="{!cls.Fee__c}"/>
+                <apex:column value="{!cls.MaxSize__c}"/>
+                <apex:column value="{!cls.ClassTeacher__c}"/>
+                <apex:column >	
+                    <apex:commandButton action="{!loadClassDetail}" value="Edit" reRender="updateForm,one" >
+                       <apex:param name="editId" value="{!cls.Id}" assignTo="{!classIdForEdit}" />
+                       <apex:param name="showEditFrom" value="true" assignTo="{!showEditPage}" />
+                   </apex:commandButton>
+                </apex:column>
+                <apex:column>
+                    <apex:commandButton action="{!deleteClass}" value="Delete" reRender="classTable" >
+                       <apex:param name="editId" value="{!cls.Id}" assignTo="{!classIdForDelete}" />
+                   </apex:commandButton>
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+        
+    </apex:form>
+    
+ 	<apex:form id="updateForm" style="display:{!if(showEditPage, 'block', 'none')};">
+        <apex:pageBlock title="Edit Class">
+            <apex:pageBlockSection >
+                <apex:inputField value="{!edtClass.Name}"/>
+                <apex:inputField value="{!edtClass.Fee__c}"/>
+                <apex:inputField value="{!edtClass.MaxSize__c}"/>
+                <apex:inputField value="{!edtClass.ClassTeacher__c}"/>
+            </apex:pageBlockSection> 
+            <apex:commandButton action="{!updateClass}" value="Update"/> 
+            <apex:commandButton action="{!cancelUpdate}" value="Cancel"/>
+        </apex:pageBlock>
+    </apex:form>
+    
+    <!-- <apex:outputText value="{!showEditPage}" id="one" /> -->
+        
+    
+</apex:page>

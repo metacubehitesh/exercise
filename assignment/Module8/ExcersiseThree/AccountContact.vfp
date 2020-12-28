@@ -1,0 +1,16 @@
+<apex:page controller="AccountContactController">
+    <apex:form >
+        <apex:pageBlock title="Related Contacts" >
+            <apex:pageBlockSection >
+                <apex:selectRadio value="{! selectedContactId }" layout="pageDirection" >
+                    <apex:selectOptions value="{! RelatedContacts }" />
+                </apex:selectRadio>
+            </apex:pageBlockSection>
+
+            <apex:commandButton action="{! setContactToOpportunity }" value="Save"/>
+            <apex:commandButton action="{! clearContactToOpportunity }" value="Clear"/>
+            <apex:commandButton action="{! cancel }" value="Cancel"/>
+
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
