@@ -1,0 +1,16 @@
+<apex:page controller="CustomQueryController">
+    <apex:form id="queryBlock">
+        <apex:pageMessages id="errorMsg"/>
+        <apex:pageBlock title="Query Editor">
+            <apex:inputTextarea value="{!query}" style="width:600px;" />
+            <apex:commandButton action="{!submit}" reRender="resultBlock,queryBlock" value="Execute Query"/>
+        </apex:pageBlock>
+        <!-- style="display:{!if(showProduct, 'block', 'none')}; -->
+    </apex:form>
+	<!-- style="display:{!if(showResult, 'block', 'none')};"-->
+    <apex:form id="resultBlock">
+        <apex:pageBlock title="Query Result" rendered="{!if(showResult, true, false)}">
+            <c:customObjectTable queryString="{!query}"/>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
