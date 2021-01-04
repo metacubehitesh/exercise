@@ -10,6 +10,7 @@ public class CustomObjectTableController {
     private String sortBy;
     public String sortingString{get;set;}
     private Boolean ascFlag = true;
+    public Boolean noRowsFound{get;set;}
     
     public CustomObjectTableController(){
      	System.debug('Constructor Called');  
@@ -34,6 +35,7 @@ public class CustomObjectTableController {
                 System.debug(columnList);
                 setCon.setPageSize(pageSize);
                 showError = false;
+                noRowsFound = false;
             }
         } catch(Exception e){
             pQuery = null;
@@ -46,6 +48,7 @@ public class CustomObjectTableController {
     public String getSOQLQuery(){
         String queryWithSort ;
         if(!String.isEmpty(sortingString)){
+            
             queryWithSort = query + ' order by '+sortingString;
             if(ascFlag){
                queryWithSort = queryWithSort + ' asc';
@@ -64,6 +67,7 @@ public class CustomObjectTableController {
         fetchData();
         List<Map<Object, Object>> listObject = new List<Map<Object, Object>>(); 
         if(setCon == null || setCon.getRecords().isEmpty()){
+            noRowsFound = true;
             return listObject;
         }
         List<SObject> listObj = setCon.getRecords();
@@ -81,6 +85,7 @@ public class CustomObjectTableController {
         if(sortBy == null){
             sortBy = sortingString;
         }else if(sortBy != sortingString){
+            sortBy = sortingString;
         	ascFlag = true;
         }
     }
