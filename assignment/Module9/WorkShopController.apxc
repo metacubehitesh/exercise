@@ -1,0 +1,192 @@
+public class WorkShopController {
+    
+    public ApexPages.StandardSetController setOrderHistoryCon{get;set;}
+    public Integer sizeHistoryPage{get;set;}
+	Public Integer noOfHistoryRecords{get; set;} 
+    
+	public ApexPages.StandardSetController setProductCon {get;set;}
+    public Integer sizeProductPage{get;set;}
+	Public Integer noOfProductRecords{get; set;}  
+    public String searchProductName{get;set;}
+    private boolean filterQuery = false;
+    public Boolean showProduct{get;set;}
+
+    public List<ProductWrapper> productWrapperList{get;set;}
+    public Map<Id, ProductWrapper> selectedProductMap{get;set;}
+    public Boolean showCart{get;set;}
+    public Id id{get;set;}
+    
+    public Boolean showInvoiceDetails{get;set;}
+    public Decimal gTotal{get;set;}
+    public String invoiceNo{get;set;}
+	public String errorMessage{get;set;}
+    private Boolean ohChange;
+    
+    public WorkShopController(){
+        showCart = false;
+        showProduct = false;
+        showInvoiceDetails = false;
+        ohChange = false;
+        sizeProductPage = 10;
+        productWrapperList = new List<ProductWrapper>();
+        selectedProductMap = new Map<Id,ProductWrapper>();
+        
+        sizeHistoryPage = 10;
+    }
+    
+    public class ProductWrapper{
+        public Product__c product{get;set;}
+        public Boolean checked{get; set;}
+        public Integer quantity{get;set;}
+        public ProductWrapper(Product__c p){
+            product = p;
+            quantity = 1;
+            checked = false;
+        }
+    }
+    
+    public void searchProducts(){
+        if(searchProductName != null && searchProductName != ''){
+            filterQuery = true;
+        }
+        if(setProductCon == null || filterQuery){
+            setProductCon = new ApexPages.StandardSetController(Database.getQueryLocator(getProductQuery()));
+            setProductCon.setPageSize(sizeProductPage);  
+            noOfProductRecords = setProductCon.getResultSize();
+        }
+    }
+    
+    public void searchOrderHistory(){
+        if(setOrderHistoryCon == null || ohChange){
+            setOrderHistoryCon = new ApexPages.StandardSetController(Database.getQueryLocator([select Id, Name, Price__c, Status__c from Order_History__c]));
+            setOrderHistoryCon.setPageSize(sizeHistoryPage);  
+            noOfHistoryRecords = setOrderHistoryCon.getResultSize();
+            ohChange = false;
+        }
+    }
+ 
+    public String getProductQuery(){
+        String soql =  'select Id, Name, ProductCode__c, Description__c, Price_Per_Unit__c, Quantity_Available__c from product__c';
+        if(searchProductName != null && searchProductName != '')
+            soql = soql + ' where Name like \'%' + searchProductName +'%\'';
+        System.debug('Query : '+soql);
+        return soql;
+    }
+    
+    public List<Order_History__c> getOrderHistory() {
+        searchOrderHistory();
+        return (List<Order_History__c>)setOrderHistoryCon.getRecords();
+    }
+    
+    public List<ProductWrapper> getProducts() {
+        searchProducts();
+        productWrapperList.clear();
+        List<Product__c> pdList = (List<Product__c>)setProductCon.getRecords();
+        for(Product__c p : pdList){
+            ProductWrapper pw = new ProductWrapper(p);
+            productWrapperList.add(pw);
+        }
+        return productWrapperList;
+    }
+    
+    public void addItemToCart(){
+        for(ProductWrapper pw : productWrapperList){
+            if(pw.checked){
+                if(selectedProductMap.containsKey(pw.product.Id)){
+                    ProductWrapper p = selectedProductMap.get(pw.product.Id);
+                    p.quantity = p.quantity+1;
+                } else{
+                	selectedProductMap.put(pw.product.Id, pw);
+                }
+            }
+        }
+        System.debug('selectedProductMap size : '+selectedProductMap.size());
+        setCartVisibility();
+        
+        System.debug('Selected List : '+selectedProductMap);
+        System.debug('Show cart : '+showCart);
+    }
+    
+    public List<ProductWrapper> getSelectedProducts(){
+        return selectedProductMap.values();
+    }
+    
+    public void removeItem(){
+        if(selectedProductMap.containsKey(id)){
+        	selectedProductMap.remove(id);
+        }
+        setCartVisibility();
+        grandTotalOfCart();
+        id=null;
+    }
+    
+    public void setCartVisibility(){
+        if(selectedProductMap.size() > 0){
+            showCart = true;
+        } else {
+            showCart = false;
+            showInvoiceDetails = false;
+        }
+    }
+    
+    public void checkout(){
+        gTotal = 0;
+		invoiceNo = getInvoiceNumber();
+        for(Id id : selectedProductMap.keySet()){
+            ProductWrapper pw = selectedProductMap.get(id);
+            if(pw.quantity > pw.product.Quantity_Available__c || pw.quantity < 1){
+                System.debug('Test');
+                ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, 'Item quantity should be in range with available quantity.'));
+                showInvoiceDetails = false;
+                return;
+            }
+        }
+        grandTotalOfCart();
+        showInvoiceDetails = true;
+    }
+    
+    public void grandTotalOfCart(){
+        gTotal = 0;
+        for(Id id : selectedProductMap.keySet()){
+            ProductWrapper pw = selectedProductMap.get(id);
+            gTotal = gTotal + (pw.quantity * pw.product.Price_Per_Unit__c);
+        }
+    }
+    
+    public String getInvoiceNumber(){
+        Integer len = 8;
+        String str = string.valueof(Math.abs(Crypto.getRandomLong()));
+        return str.substring(0, len);
+    }
+    
+    public void addNewPurchase(){
+        showProduct = true;
+        return;
+    }
+    
+    public void placeOrder(){
+        List<Product__c> productList = new List<Product__c>();
+        for(Id id : selectedProductMap.keySet()){
+            ProductWrapper pw = selectedProductMap.get(id);
+            Product__c pd = pw.product;
+            pd.Quantity_Available__c = pd.Quantity_Available__c - pw.quantity;
+            productList.add(pd);
+            
+           	
+        }
+        
+        if(productList.size()>0){
+            update productList;
+        }
+        
+        Order_History__c ord = new Order_History__c();
+        ord.Name = gTotal + '';
+        ord.Price__c = gTotal;
+        
+        insert ord;
+        ohChange = true;
+        selectedProductMap.clear();
+        setCartVisibility();
+    }
+    
+}

@@ -1,0 +1,41 @@
+public class AccountContactController {
+	private Id opportunityId;
+    private Opportunity opp;
+    private PageReference oppPage;
+    public Id selectedContactId{get;set;}
+    
+    public AccountContactController(){
+        opportunityId = ApexPages.currentPage().getParameters().get('id');
+        System.debug('OppId : '+opportunityId);
+        opp = [select Manager__c from Opportunity where id =:opportunityId];
+        System.debug('Opp : '+opp);
+        oppPage = new PageReference('/lightning/r/Opportunity/'+ opportunityId +'/view');
+        oppPage.setRedirect(true);
+    }
+    
+    public List<SelectOption> getRelatedContacts(){
+        List<SelectOption> sOptions = new List<SelectOption>();
+        for(Contact cn : [select Id, Name from Contact where AccountId = :opp.Manager__c]){
+            SelectOption so = new SelectOption(cn.id, cn.name);
+            sOptions.add(so);
+        }
+        return sOptions;
+    }
+    
+    public PageReference setContactToOpportunity(){
+        opp.BillToContact__c = selectedContactId;
+        update opp;
+        return oppPage;
+    }
+    
+    public PageReference clearContactToOpportunity(){
+        opp.BillToContact__c = null;
+        update opp;
+        return oppPage;
+    }
+    
+    public PageReference cancel(){
+        return oppPage;
+    }
+    
+}

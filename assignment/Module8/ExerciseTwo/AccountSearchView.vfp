@@ -1,0 +1,47 @@
+<apex:page controller="AccountSearch"  sidebar="false">
+    <apex:form >
+        <apex:pageBlock title="Account Search">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton action="{! fetch }" value="Search">
+                    <apex:actionSupport event="onclick" rerender="accountList"/>
+                </apex:commandButton>
+            </apex:pageBlockButtons>
+			
+            <apex:pageBlockSection >
+                <apex:inputText Label="Accouny Number" value="{!filterAccountRecNo}" />
+                <apex:inputText Label="Billing State" value="{!filterBillingState}" />
+                <apex:inputText Label="Billing City" value="{!filterBillingCity}" />
+                <apex:inputText Label="Billing Country" value="{!filterBillingCountry}" />
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{! members }" var="ac" id="accountList">
+                <apex:column value="{!ac.Name}"/>
+                <apex:column value="{!ac.BillingCity}"/>
+                <apex:column value="{!ac.BillingState}"/>
+                <apex:column value="{!ac.BillingCountry}"/>
+            </apex:pageBlockTable>
+
+            Page: <apex:outputText value=" {!PageNumber} of {! CEILING(ResultSize / PageSize) }"/>
+            
+            
+            <apex:commandButton value="First" action="{!beginning}" disabled="{!prev}">
+                <apex:actionSupport event="onclick" rerender="accountList"/>
+            </apex:commandButton>
+            
+            <apex:commandButton value="Previous" action="{!previous}" disabled="{!prev}">
+                <apex:actionSupport event="onclick" rerender="accountList"/>
+            </apex:commandButton>
+            
+            <apex:commandButton value="Next"  action="{!next}" disabled="{!nxt}">
+                <apex:actionSupport event="onclick" rerender="accountList"/>
+            </apex:commandButton>
+            
+            <apex:commandButton value="Last" action="{!end}" disabled="{!nxt}">
+                <apex:actionSupport event="onclick" rerender="accountList"/>
+            </apex:commandButton>
+
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

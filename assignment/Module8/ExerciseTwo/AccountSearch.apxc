@@ -1,0 +1,113 @@
+public class AccountSearch {
+    
+    public ApexPages.StandardSetController setCon {
+        get{
+            if(setCon == null){
+                setCon = new ApexPages.StandardSetController(dataRecord());   
+            }
+            return setCon;
+        } set;}
+    
+    public String selectSoql;
+    
+    public Integer filterAccountRecNo{get;set;}
+    public String filterBillingCity{get;set;}
+    public String filterBillingState{get;set;}
+    public String filterBillingCountry{get;set;}
+    
+    public Integer totalRecords = [select count() from Account];
+    Integer index = 0;    
+    public Integer pageSize{get;set;}
+    
+    public AccountSearch(){
+        this.filterAccountRecNo = 10;
+        this.pageSize = 10;
+    }
+    
+    public void fetch(){
+        selectSoql = 'select Name, BillingCity, BillingState, BillingCountry from Account ';
+        String whereClause = '';
+        if(filterAccountRecNo != null && filterAccountRecNo > 0){
+            pageSize = filterAccountRecNo;
+        }
+        
+        if(filterBillingCity != null && filterBillingCity != ''){
+            whereClause = whereClause + 'BillingCity like \'%'  + filterBillingCity + '%\'';
+        }
+        
+        if(filterBillingState != null && filterBillingState != ''){
+            whereClause = whereClause + 'BillingState like \'%' + filterBillingState + '%\'';
+        }
+        
+        if(filterBillingCountry != null && filterBillingCountry != ''){
+            whereClause = whereClause + 'BillingCountry like \'%' + filterBillingCountry + '%\'';
+        }
+        
+        if(!String.isEmpty(whereClause)){
+            index = 0;
+            selectSoql = selectSoql + ' where '+ whereClause;
+        }
+    }
+    
+    public List<Account> dataRecord(){
+        fetch();
+        List<Account> listAccount;
+        String accountSql = selectSoql + ' LIMIT '+pageSize +' OFFSET '+ (index*pageSize);
+        listAccount = Database.Query(accountSql);
+        return listAccount;  
+    }
+    
+    public List<Account> getMembers() {
+     	setCon = new ApexPages.StandardSetController(dataRecord());   
+    	return (List<Account>) setCon.getRecords();
+    }
+    
+    public void beginning()
+    {
+        index = 0;
+    }
+ 
+    public void previous()
+    {
+        index = index - 1;
+    }
+ 
+    public void next()
+    {
+        index = index+1;
+    }
+
+    public void end()
+    {
+        if(Math.mod(totalRecords, pageSize) == 0){
+            index = ((Integer)Math.ceil(totalRecords/pageSize)) - 1;
+        } else {
+        	index = (Integer)Math.ceil(totalRecords/pageSize);
+        }
+    }     
+ 
+    public boolean getprev()
+    {
+        if(index == 0)
+        	return true;
+        else
+        	return false;
+    }
+ 
+    public boolean getnxt()
+    {
+        if(((index+1) * pageSize) >= totalRecords)
+        	return true;
+        else
+            return false;
+    }  
+    
+    public Integer getPageNumber(){
+        return index+1;
+    }
+
+    public Integer getResultSize(){
+        return totalRecords;
+    }
+
+}

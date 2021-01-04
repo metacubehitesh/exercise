@@ -1,0 +1,31 @@
+public class StudentPdfGenerator {
+    
+    public Student__c studentDetails{get;set;}
+    private PageReference studentPage;
+    
+    public StudentPdfGenerator(ApexPages.StandardController studentController){
+        studentDetails = (Student__c)studentController.getRecord();
+        studentPage = new PageReference('/lightning/r/Student__c/'+ studentDetails.Id +'/view');
+        studentPage.setRedirect(true);
+    }
+    
+    public PageReference createPdf(){
+        
+        String atcName = studentDetails.Id + '.pdf';
+        Integer attachmentCount = [select count() from Attachment where name = :atcName];
+        
+        if(attachmentCount > 0){
+            delete [select Id from Attachment where name = :atcName];
+        } 
+        
+        Blob b = ApexPages.currentPage().getContentAsPdf();
+        Attachment atc = new Attachment();
+        atc.Name = atcName;
+        atc.ParentId = studentDetails.Id;
+        atc.Body = b;
+        insert atc;
+      
+        return studentPage;
+        
+    }
+}

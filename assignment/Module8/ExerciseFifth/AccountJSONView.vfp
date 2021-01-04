@@ -1,0 +1,20 @@
+<apex:page controller="CustomJSON">
+    
+    <apex:form>
+        <apex:pageBlock title="SObject to JSON">
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton action="{! test }" value="Get Json">
+                    <apex:actionSupport event="onclick" rerender="jsonString"/>
+                </apex:commandButton>
+            </apex:pageBlockButtons>
+            <apex:pageBlockSection>
+                <apex:inputText Label="Id : " value="{!id}" />
+                <apex:inputText Label="ObjectType : " value="{!objType}" />
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection title="JSON String" id="jsonString">
+                <apex:outputText value="{! PrettyJson }" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,25 @@
+public class CustomJSON {
+
+    public String objType{get;set;}
+    public Id id{get;set;}
+    
+    public CustomJSON(){}
+    
+    public String getPrettyJson(){
+        System.debug('objType : '+objType);
+        System.debug('id : '+id);
+        String strObj = '';
+        if(objType != null && objType != '' && id != null ){
+            String soql = 'select Id, Name from '+objType+' where id = \'' +id + '\'';
+            System.debug('SOQL : '+soql);
+            SObject obj = Database.query(soql);
+            strObj = JSON.serializePretty(obj);
+            System.debug('JSON : '+strObj);
+            return strObj;
+        } else {
+            return strObj;
+        }
+    }
+    
+    public void test(){}
+}

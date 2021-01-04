@@ -1,0 +1,36 @@
+public class ManageClassController {
+   
+    public String classIdForDelete{get;set;}
+    public String classIdForEdit{get;set;}
+    public Class__c edtClass{get;set;}
+    public Boolean showEditPage{get;set;}
+    
+    public List<Class__c> getClassList(){
+        return [select Id, Name, Fee__c, MaxSize__c, ClassTeacher__c from Class__c];
+    }
+    
+    public void deleteClass(){
+        System.debug('Class to be deleted : '+classIdForDelete);
+        Database.DeleteResult result = Database.delete(classIdForDelete);
+        System.debug('Deleted Item = '+result.isSuccess());
+    }
+    
+    public void loadClassDetail(){
+        System.debug('Classid :' +classIdForEdit);
+        System.debug('Test Load Class Details');
+        System.debug('Before showEditPage : '+ showEditPage);
+        this.edtClass = [select Id, Name, Fee__c, MaxSize__c, ClassTeacher__c from Class__c where Id = :classIdForEdit];
+        System.debug('Test Load Class Details'+edtClass);
+    }
+    
+    public void updateClass(){
+        update edtClass;
+        this.edtClass = null;
+        this.showEditPage = false;
+    }
+    
+    public void cancelUpdate(){
+        this.edtClass = null;
+        this.showEditPage = false;        
+    }
+}
