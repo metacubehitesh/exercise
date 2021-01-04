@@ -1,0 +1,23 @@
+@isTest
+public class TestCustomQueryController {
+
+    @isTest
+    static void testSubmitWithQuery(){
+        Test.startTest();
+        CustomQueryController cc = new CustomQueryController();
+        cc.query = 'select Id, Name from Account';
+        cc.submit();
+        Test.stopTest();
+        System.assert(true, cc.showResult);
+    }
+    
+    @isTest
+    static void testSubmitWithOutQuery(){
+        Test.startTest();
+        CustomQueryController cc = new CustomQueryController();
+        cc.query = '';
+        cc.submit();
+        Test.stopTest();
+        System.assert(!cc.showResult);
+    }
+}

@@ -1,0 +1,54 @@
+@isTest
+public class TestCustomObjectTableController {
+    @isTest
+    static void testGetSObjectList(){
+        Account ac = createAccount();
+        CustomObjectTableController cot = new CustomObjectTableController();
+        cot.query = 'select Id, Name from Account';
+        
+        Test.startTest();
+        cot.fetchData();
+        List<Map<Object, Object>> mapAccount = cot.getSObjectList();
+        Test.stopTest();
+        
+        System.assertEquals(1, mapAccount.size());
+    }
+    
+    @isTest
+    static void testGetSOQLQuery(){
+        
+        CustomObjectTableController cot = new CustomObjectTableController();
+        cot.query = 'select Id, Name from Account';
+        cot.sortingString = 'Name';
+        
+        Test.startTest();
+        
+        cot.sortData();
+        String queryString = cot.getSOQLQuery();
+        
+        Test.stopTest();
+        
+        System.assertEquals('select Id, Name from Account order by Name asc', queryString);
+    }
+    
+    @isTest
+    static void testGetSObjectListWithError(){
+        Account ac = createAccount();
+        CustomObjectTableController cot = new CustomObjectTableController();
+        cot.query = 'select Id Name from Account';
+        
+        Test.startTest();
+        cot.fetchData();
+        
+        Test.stopTest();
+        
+        System.assertEquals('System.QueryException : only aggregate expressions use field aliasing', cot.errorMessage);
+    }
+    
+    
+    public static Account createAccount(){
+        Account acc = new Account(Name = 'TestTest');
+        insert acc;
+        return acc;
+    }
+}

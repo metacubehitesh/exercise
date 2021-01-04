@@ -1,0 +1,92 @@
+public class CustomObjectTableController {
+
+    public ApexPages.StandardSetController setCon {get;set;}
+    public String query{get;set;}
+    public Integer pageSize{get;set;}
+    public List<String> columnList{get;set;}
+    public Boolean showError{get;set;}
+    public String errorMessage{get;set;}
+    private String pQuery;
+    private String sortBy;
+    public String sortingString{get;set;}
+    private Boolean ascFlag = true;
+    public Boolean noRowsFound{get;set;}
+    
+    public CustomObjectTableController(){
+     	System.debug('Constructor Called');  
+        showError = false;
+        columnList = new List<String>();
+        pageSize = 10;
+    }
+    
+    public void fetchData(){
+        try{
+            String finalQuery = getSOQLQuery();
+            if(String.isEmpty(finalQuery))
+                return;
+            if(setCon == null || pQuery != finalQuery){
+                columnList.clear();
+                System.debug('QuerySTring : '+finalQuery);
+                pQuery = query;
+                setCon = new ApexPages.StandardSetController(Database.query(finalQuery));
+                for(String cl : query.subStringAfter('select ').subStringBefore(' from').split(',')){
+                    columnList.add(cl.trim());
+                }
+                System.debug(columnList);
+                setCon.setPageSize(pageSize);
+                showError = false;
+                noRowsFound = false;
+            }
+        } catch(Exception e){
+            pQuery = null;
+            errorMessage = e.getTypeName() +' : '+ e.getMessage();
+            System.debug('Exception : '+errorMessage);
+            showError = true;
+        }
+    }
+    
+    public String getSOQLQuery(){
+        String queryWithSort ;
+        if(!String.isEmpty(sortingString)){
+            
+            queryWithSort = query + ' order by '+sortingString;
+            if(ascFlag){
+               queryWithSort = queryWithSort + ' asc';
+               ascFlag = false;
+            } else {
+               queryWithSort = queryWithSort + ' desc';
+               ascFlag = true;
+            }
+            sortingString = null;
+            return queryWithSort;
+        }
+        return query;
+    }
+    
+    public List<Map<Object, Object>> getSObjectList(){
+        fetchData();
+        List<Map<Object, Object>> listObject = new List<Map<Object, Object>>(); 
+        if(setCon == null || setCon.getRecords().isEmpty()){
+            noRowsFound = true;
+            return listObject;
+        }
+        List<SObject> listObj = setCon.getRecords();
+        for(SObject obj : listObj){
+            Map<Object, Object> objMap = new Map<Object, Object>();
+            for(String s: columnList){
+                objMap.put(s, obj.get(s));
+            }
+            listObject.add(objMap);
+        }
+        return listObject;
+    }
+    
+    public void sortData(){
+        if(sortBy == null){
+            sortBy = sortingString;
+        }else if(sortBy != sortingString){
+            sortBy = sortingString;
+        	ascFlag = true;
+        }
+    }
+}

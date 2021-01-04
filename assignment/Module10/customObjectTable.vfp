@@ -1,0 +1,32 @@
+<apex:component controller="CustomObjectTableController">
+  <!-- Begin Default Content REMOVE THIS -->
+    <apex:attribute name="queryString" type="String" Description="This query is used for fetch data from the database"
+     required="true" assignTo="{!query}"/>
+    
+    <apex:pageBlock id="dataBlock">
+        <apex:outputText rendered="{!if(showError, true, false)}" style="color:red;" value="{!errorMessage}" />
+        <apex:outputText rendered="{!if(noRowsFound, true, false)}" style="color:red;" value="Rows Not Available" />
+        <apex:pageblockTable value="{!SObjectList}" var="obj" rendered="{!if(!showError, true, false)}">
+            <apex:repeat value="{!columnList}" var="cl">
+                <apex:column >
+                    <apex:facet name="header">
+                        <apex:commandLink action="{!sortData}" reRender="dataBlock">
+                            <apex:param name="sortParam" value="{!cl}" assignTo="{!sortingString}" />
+                            {!cl}
+                        </apex:commandLink>
+                    </apex:facet>
+                    {!obj[cl]}
+                </apex:column>                
+            </apex:repeat>
+        </apex:pageblockTable>
+        <apex:panelGroup rendered="{!if(!showError, true, false)}">
+            <apex:commandButton reRender="dataBlock" value="Previous" action="{!setCon.previous}" disabled="{!!setCon.hasPrevious}" title="Previous Page"/> 
+            <apex:commandButton reRender="dataBlock" value="Next" action="{!setCon.next}" disabled="{!!setCon.hasNext}" title="Next Page"/> 
+            <apex:outputText >
+                Page : {!setCon.pageNumber} of {!CEILING(setCon.ResultSize/pageSize)}
+            </apex:outputText>
+        </apex:panelGroup>
+    </apex:pageBlock>
+
+  <!-- End Default Content REMOVE THIS -->
+</apex:component>

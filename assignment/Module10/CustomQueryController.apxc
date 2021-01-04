@@ -1,0 +1,19 @@
+public class CustomQueryController {
+
+    public String query{get;set;}
+    public Boolean showResult{get;set;}
+    
+    public CustomQueryController(){
+        showResult=false;
+    }
+        
+    public void submit(){
+        if(String.isEmpty(query)){
+            showResult = false;
+            ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL, 'Query should not be empty.'));
+            return;
+        }
+        System.debug('Query : '+query);
+        showResult = true;
+    }
+}
