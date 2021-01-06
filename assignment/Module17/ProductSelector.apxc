@@ -1,0 +1,40 @@
+public class ProductSelector extends fflib_SObjectSelector {
+    
+    public List<Schema.SObjectField> getSObjectFieldList(){
+        return new List<Schema.SObjectField> {
+            Product__c.Id,
+            Product__c.Name,
+            Product__c.ProductCode__c,
+            Product__c.Description__c,
+            Product__c.Price_Per_Unit__c,
+            Product__c.Quantity_Available__c
+        };
+    }
+    
+    public Schema.SObjectType getSObjectType() {
+        return Product__c.sObjectType;
+    }
+    
+    
+    public Integer getRecordCount(String filterName){
+        String queryStr = 'select count() from product__c';
+        if(!String.isEmpty(filterName)){
+            queryStr = queryStr + ' where name like \'%' + filterName + '%\'';
+        }
+        System.debug('query : '+queryStr);
+        return Database.countQuery(queryStr);
+    }
+    
+    public List<Product__c> getAllProductsWithFilterOne(Integer offset, Integer lmt, String filterName){
+        fflib_QueryFactory query = newQueryFactory();
+        
+        if(!String.isEmpty(filterName))
+        	query.setCondition('name like \'%' + filterName + '%\'');
+        
+        query.setOffset(offset);
+        query.setLimit(lmt);
+        
+        return (List<Product__c>) Database.query(query.toSOQL());
+    }
+    
+}

@@ -1,0 +1,27 @@
+public class ProductServicce {
+
+    private static ProductSelector selectorProduct = new ProductSelector();
+    private ProductPageDetail productPageDetails;
+    private String filterStr;
+    
+    public ProductServicce(ProductPageDetail productPageDetails){
+        this.productPageDetails = productPageDetails;
+        
+    }
+    
+    public List<ProductWrapper> getAllProduct(){
+        List<Product__c> pList = selectorProduct.getAllProductsWithFilterOne
+            (
+                productPageDetails.pageNumber-1,
+                productPageDetails.pageSize,
+                productPageDetails.filterString
+            );
+        productPageDetails.totalRecords = selectorProduct.getRecordCount(productPageDetails.filterString);
+        List<ProductWrapper> listProduct = new List<ProductWrapper>();
+        for(Product__c pc : pList){
+            ProductWrapper pw = new ProductWrapper(pc);
+            listProduct.add(pw);
+        }
+        return listProduct;
+    }
+}

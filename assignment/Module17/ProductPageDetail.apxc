@@ -1,0 +1,12 @@
+public class ProductPageDetail {
+    public List<Product__c> productList{get;set;}
+    public Integer totalRecords{get;set;}
+    public String filterString{get;set;}
+    public Integer pageSize{get;set;}
+    public Integer pageNumber{get;set;}
+    
+    public ProductPageDetail(){
+        pageSize = 10;
+        pageNumber = 1;
+    }
+}

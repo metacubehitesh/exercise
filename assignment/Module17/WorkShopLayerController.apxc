@@ -1,0 +1,33 @@
+public class WorkShopLayerController {
+
+    public ProductPageDetail productPageDetails{get;set;}
+    private ProductServicce pService;
+    public Boolean previous{get;set;}
+    public Boolean next{get;set;}
+    private String filterStr;
+    
+    public WorkShopLayerController(){
+    	productPageDetails = new productPageDetail();
+        pService = new ProductServicce(productPageDetails);
+        
+    }
+    
+    public List<ProductWrapper> getProducts(){
+        List<ProductWrapper> listProduct = pService.getAllProduct();
+        hasProductPrevious();
+        hasProductNext();
+        return listProduct;
+    }
+    
+    public void onKeyChangeReload(){
+        System.debug(productPageDetails.filterString);
+    }
+    
+    public void hasProductPrevious(){
+        previous = productPageDetails.pageNumber > 1;
+    }
+    
+    public void hasProductNext(){
+        next = (productPageDetails.pageNumber * productPageDetails.pageSize) < productPageDetails.totalRecords;
+    }
+}

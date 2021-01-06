@@ -1,0 +1,40 @@
+<apex:page controller="WorkShopLayerController">
+    <apex:form id="productBlock">
+        <apex:pageBlock title="Products">
+            <apex:panelGroup >
+                <apex:inputText title="Search Product" value="{!productPageDetails.filterString}" label="Search Product">
+                    <apex:actionSupport event="onkeyup" action="{!onKeyChangeReload}" reRender="productTable" />
+                </apex:inputText>
+                <apex:commandButton value="Add To Cart" style="float:right"  reRender="cartBlock" />
+            </apex:panelGroup>
+            <apex:pageBlockTable value="{!Products}" var="pd" id="productTable">
+                <apex:column headerValue="Select Product">
+                    <apex:inputCheckbox value="{!pd.checked}"  />
+                </apex:column>
+                <apex:column headerValue="Name">
+                        <apex:outputField value="{!pd.product.Name}"/>
+                </apex:column>
+                <apex:column headerValue="Product Code">
+                        <apex:outputField value="{!pd.product.ProductCode__c}"/>
+                </apex:column>
+                <apex:column headerValue="Description">
+                        <apex:outputField value="{!pd.product.Description__c}"/>
+                </apex:column>
+                <apex:column headerValue="Price Per Unit">
+                        <apex:outputField value="{!pd.product.Price_Per_Unit__c}"/>
+                </apex:column>
+                <apex:column headerValue="Quantity Available">
+                        <apex:outputField value="{!pd.product.Quantity_Available__c}"/>
+                </apex:column>
+            </apex:pageBlockTable>
+            
+            <apex:panelGroup id="pagination">
+                <apex:commandButton reRender="productBlock" value="First"  disabled="{!!previous}" title="First Page"/> 
+                <apex:commandButton reRender="productBlock" value="Previous" disabled="{!!previous}" title="Previous Page"/> 
+                <apex:commandButton reRender="productBlock" value="Next" disabled="{!!next}" title="Next Page"/> 
+                <apex:commandButton reRender="productBlock" value="Last" disabled="{!!next}" title="Last Page"/> 
+            </apex:panelGroup>
+            
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

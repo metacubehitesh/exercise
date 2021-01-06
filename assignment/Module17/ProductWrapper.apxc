@@ -1,0 +1,10 @@
+public class ProductWrapper {
+    public Product__c product{get;set;}
+    public Boolean checked{get; set;}
+    public Integer quantity{get;set;}
+    public ProductWrapper(Product__c p){
+        product = p;
+        quantity = 1;
+        checked = false;
+    }
+}
