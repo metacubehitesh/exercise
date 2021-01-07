@@ -1,0 +1,52 @@
+<apex:page standardController="Student__c" showHeader="false" sidebar="false">
+    <style>
+    table, th, td {
+      border: 1px solid black;
+    }
+    </style>
+    <script type="text/javascript">
+		var __sfdcSessionId = '{!GETSESSIONID()}';
+    </script>
+    <script src="/soap/ajax/45.0/connection.js"  type="text/javascript">
+    </script>
+    <script>
+    	 window.onload = pageSetup;
+         function pageSetup(){
+             var url = new URL(window.location.href);
+             var id = url.searchParams.get("id");
+         	 console.log(id);
+			 var result = sforce.connection.query("select name, Class__c from student__c where id = '"+id+"'");
+             var state = {output : document.getElementById("dataRow")};
+
+             var output = "<table><tr><th>Name</th><th>Class</th></tr><tr>";
+             var records = result.getArray('records');
+             var std = records[0];
+             output += "<td>"+std.Name+"</td><td>";
+             output += std.Class__c+"</td>";
+             output += "</tr></table>";
+             console.log("output : "+output);
+             document.getElementById("dataRow").innerHTML = output;
+             
+         }
+        function layoutResult(queryResult, source) {
+
+            var output = "<table><tr><th>Name</th><th>Class</th></tr><tr>";
+            var records = queryResult.getArray('records');
+            var std = records[0];
+            output += "<td>"+std.Name+"</td><td>";
+            output += std.Class__c+"</td>";
+            output += "</tr></table>";
+            console.log("output : "+output);
+            source.output.innerHTML = output;
+
+        }
+    	function queryFailed(error, source) {
+			source.output.innerHTML = "An error has occurred: " + error;
+		}
+    </script>
+
+    <div id="dataRow" >
+        
+    </div>
+
+</apex:page>

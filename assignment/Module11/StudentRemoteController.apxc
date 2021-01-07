@@ -1,0 +1,12 @@
+global with sharing class StudentRemoteController {
+    
+
+    
+    @RemoteAction 
+    global static void deleteStudents(List<Id> ids){
+        List<Student__c> listStudent = [select Id from Student__c where Id in :ids];
+        System.debug(listStudent);
+        delete listStudent;
+    }
+
+}

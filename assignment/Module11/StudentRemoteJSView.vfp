@@ -1,0 +1,67 @@
+<apex:page controller="StudentRemoteController">
+    
+    <script type="text/javascript">
+		var __sfdcSessionId = '{!GETSESSIONID()}';
+    </script>
+    
+    <script src="/soap/ajax/45.0/connection.js"  type="text/javascript">
+    </script>
+    
+    <script>
+
+    	var studentIdList = new Array();
+    	var url = new URL(window.location.href);
+    	var ids = url.searchParams.get("ids");
+    	if(ids != null)
+    		studentIdList = ids.split('%2Ca');
+                            
+    	window.onload = function(){
+            console.log('return back when no record found');
+            if(ids == null || studentIdList.length == 0){
+                alert('Record(s) Not Selected');
+                studentIdList = [];
+                returnBack();
+            } 
+            if(studentIdList.length > 0) {
+                console.log('unhide div');
+                var div = document.getElementById('frm');
+                div.removeAttribute('style');
+                div.setAttribute("style", "display: block;");
+            }
+        };
+    
+		function deleteRecordByRemoteController(){
+            console.log('delete remotely');
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.StudentRemoteController.deleteStudents}',
+                studentIdList,
+                handleResult
+            );
+        }
+    
+    	function handleResult(result, event){
+            console.log(event);
+        }
+    	
+    	function returnBack(){
+            console.log('return back on cancel');
+            window.location.href = 'https://metacube11-dev-ed.my.salesforce.com/a00/o';
+		}
+
+    </script>
+
+    
+    <div id="frm" style="display: none">
+        <apex:form >
+            <apex:pageBlock title="Delete Student" id="pgBlk">
+                <apex:pageBlockSection >
+                    <apex:outputText value="Do want delete the selected record(s)"/>
+                </apex:pageBlockSection>
+                <apex:pageBlockSection columns="2">
+                    <apex:commandButton value="CANCEL" oncomplete="window.top.location = 'https://metacube11-dev-ed.my.salesforce.com/a00/o'"/>
+                    <apex:commandButton value="CONTINUE" onclick="deleteRecordByRemoteController()" oncomplete="window.top.location = 'https://metacube11-dev-ed.my.salesforce.com/a00/o'"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:form>
+    </div>    
+</apex:page>
