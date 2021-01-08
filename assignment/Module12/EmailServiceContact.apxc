@@ -1,0 +1,43 @@
+global class EmailServiceContact implements Messaging.InboundEmailHandler {
+    
+	global Messaging.InboundEmailResult handleInboundEmail(Messaging.InboundEmail email, Messaging.InboundEnvelope envelope) {
+        Messaging.InboundEmailResult result = new Messaging.InboundEmailresult();
+        
+        //from email 
+        String fromEmail = email.fromAddress;
+        System.debug('Email from : '+fromEmail);
+        
+        //subject
+        String subjectString = email.subject;
+        System.debug('Email subject : '+subjectString);
+        
+        
+    	// Store the email plain text into the local variable 
+    	String myPlainText= '';
+    	myPlainText = email.plainTextBody;
+        System.debug('Email Body : '+myPlainText);
+        
+        
+        //to fetch attachment in email	
+        if(email.textAttachments != null){
+            List<Contact> listContact = new List<Contact>();
+            for(Messaging.InboundEmail.TextAttachment attachmentRaw : email.textAttachments){
+                System.debug('Boby of the attachment : '+attachmentRaw.body);
+                String jsonString = XMLParser.xmlToJson(attachmentRaw.body);
+                ContactsWrapper contactWrapper = (ContactsWrapper)System.JSON.deserialize(jsonString, ContactsWrapper.class);
+                if(contactWrapper != null && contactWrapper.contacts != null && contactWrapper.contacts.contact != null){
+                    List<Contact> contacts = contactWrapper.contacts.contact;
+                    if(contacts.size() > 0){
+                        listContact.addAll(contacts);
+                    }
+                }
+            }
+            System.debug('list contact : '+listContact);
+            insert listContact;
+        } else {
+            System.debug('No attachment found in the email');
+        }
+        return result;
+    }
+    
+}

@@ -1,0 +1,40 @@
+public class EmailService {
+    public static void sendEmailToOpportunityOwners(List<Opportunity> oppList){
+        //to obtain email template
+        EmailTemplate et=[Select id from EmailTemplate where name = :'OpportunityStatus'];
+        
+        //list of email's to be sent
+        List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>(); 
+        
+        List<Id> owners = new List<Id>();
+		for(Opportunity opp : oppList){
+            owners.add(opp.OwnerId);
+        }
+		Map<Id, User> userMap = new Map<Id, User>([select Id, Email from User where id in :owners]);   
+        System.debug('MapUser : '+userMap);
+        for(Opportunity opp : oppList){
+            
+            Messaging.SingleEmailMessage singleMail = new Messaging.SingleEmailMessage();
+
+            List<String> sendTo = new List<String>();
+            Id userId = opp.OwnerId;
+            sendTo.add(userMap.get(userId).Email);
+            singlemail.setToAddresses(sendTo);
+            
+            System.debug('SendTo Email : '+sendTo);
+            //set template Id
+            singleMail.setTemplateId(et.Id);
+            
+            //flag to false to stop inserting activity history
+            singleMail.setSaveAsActivity(false);
+            singleMail.setTargetObjectId(userId);
+            
+            //add mail
+            emails.add(singleMail);
+        }
+        System.debug('Emails count : '+emails.size());
+        System.debug('Emails : '+emails);
+        Messaging.sendEmail(emails);
+        
+    }
+}
