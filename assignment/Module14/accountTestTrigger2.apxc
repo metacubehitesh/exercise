@@ -1,0 +1,13 @@
+trigger accountTestTrigger2 on Account (before delete, before insert, before update) {
+	//2nd problem
+    List<Opportunity> oppList = [select id, name, closedate, stagename from Opportunity
+					where accountId IN :Trigger.newMap.keySet() and StageName in ('Closed - Lost', 'Closed - Won')];
+    for(Opportunity opp : oppList){
+        if(opp.StageName == 'Closed - Lost'){
+            System.debug('do some logic');
+        }
+        if(opp.StageName == 'Closed - Won'){
+            System.debug('do some logic');
+        }
+    }
+}
