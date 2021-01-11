@@ -1,0 +1,6 @@
+public class ContactsWrapper {
+	public Contacts contacts;
+    public static Contacts parse(String json) {
+		return (Contacts) System.JSON.deserialize(json, Contacts.class);
+	}
+}
