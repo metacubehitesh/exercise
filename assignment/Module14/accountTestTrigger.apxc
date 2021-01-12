@@ -1,0 +1,23 @@
+trigger accountTestTrigger on Account (before insert, before update) {
+    
+    //1st problem
+    Set<Id> ids =  trigger.newMap.keySet();
+    
+    Map<Id, Account> accMap = new Map<Id, Account>([select Id, (select id, salutation, firstname, lastname, email, description from Contacts) from account where id in :ids]);
+    
+    List<Contact> contactListToBeUpdated = new List<Contact>();
+    for(Id id : accMap.keySet()){
+        List<Contact> listContact = accMap.get(id).Contacts;
+        if(listContact.size() > 0){    
+            for(Contact cn : listContact){
+                cn.Description = cn.salutation + ' ' + cn.firstname + ' ' + cn.lastname;
+            }
+        	contactListToBeUpdated.addAll(listContact);  
+        }
+    }
+    
+    if(contactListToBeUpdated.size() > 0){
+		update contactListToBeUpdated;        
+    }
+    
+}
