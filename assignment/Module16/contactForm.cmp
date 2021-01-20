@@ -1,5 +1,5 @@
 <aura:component controller="ContactController">
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:dependency resource="markup://force:navigateToSObject" type="EVENT"/>
     <aura:attribute name="newContact" type="Contact"
                     default="{ 'sobjectType': 'Contact',
                              'FirstName': '',
@@ -12,6 +12,7 @@
     <aura:attribute name="displayFlag" default="false" type="Boolean" />
     <aura:attribute name="displayStatus" default="Success" type="String" />
     <aura:attribute name="displayMessage" default="Success" type="String" />
+    <aura:attribute name="recordId" default="" type="String" />
     <lightning:layout>
         <lightning:layoutItem padding="around-small" size="6">
             <div aria-labelledby="newexpenseform">
@@ -20,6 +21,7 @@
                                                        slds-p-vertical_medium">
                         Add Contact
                     </legend>
+                    
                     <form class="slds-form_stacked">
                         <lightning:input aura:id="contactform" label="Firstname"
                                          name="firstname"
@@ -52,41 +54,22 @@
         </lightning:layoutItem>
     </lightning:layout>
     
-    <lightning:layout>
-        <table class="slds-table slds-table--bordered">
-            <tbody>
-                <tr>
-                    <th><b>FirstName</b></th>
-                    <th><b>LastName</b></th>
-                    <th><b>Email</b></th>
-                    <th><b>Phone</b></th>
-                    <th><b>Fax</b></th>
-                </tr>
-                <aura:iteration items="{!v.contactList}" var="row">
-                    <tr>
-                        <td>{!row.FirstName}</td>
-                        <td>{!row.LastName}</td>
-                        <td>{!row.Email}</td>
-                        <td>{!row.Phone}</td>
-                        <td>{!row.Fax}</td>
-                    </tr>
-                </aura:iteration>
-            </tbody>
-        </table>
-    </lightning:layout>
+    
+	
+	
     
     <aura:if isTrue="{!v.displayFlag}">
         <div class="demo-only" style="height:24rem">
             <section role="alertdialog" tabindex="0" aria-labelledby="prompt-heading-id" aria-describedby="prompt-message-wrapper" class="slds-modal slds-fade-in-open slds-modal_prompt" aria-modal="true">
                 <div class="slds-modal__container">
-                    <header class="slds-modal__header slds-theme_error slds-theme_alert-texture">
+                    <header class="slds-modal__header slds-theme--success slds-theme_alert-texture">
                         <h2 class="slds-text-heading_medium" id="prompt-heading-id">{!v.displayStatus}</h2>
                     </header>
                     <div class="slds-modal__content slds-p-around_medium" id="prompt-message-wrapper">
                         <p>{!v.displayMessage}</p>
                     </div>
                     <footer class="slds-modal__footer slds-theme_default">
-                        <button class="slds-button slds-button_neutral" onclick="{!c.closePromt}">Got It</button>
+                        <button class="slds-button slds-button_neutral" onclick="{!c.closePromt}">Redirect To Contact Page</button>
                     </footer>
                 </div>
             </section>

@@ -6,8 +6,9 @@
         });
         action.setCallback(this, function(response){
             let state = response.getState();
-            console.log(JSON.stringify(response));
             if (state === "SUCCESS") {
+                component.set("v.newContact",response.getReturnValue());
+                component.set("v.recordId", response.getReturnValue().Id);
                 component.set("v.displayFlag",'true');
                 component.set("v.displayStatus",'Success');
                 component.set("v.displayMessage",'Record Created Successfully.');
