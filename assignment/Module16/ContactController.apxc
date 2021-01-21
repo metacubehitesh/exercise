@@ -1,0 +1,14 @@
+public class ContactController {
+    
+    @AuraEnabled
+    public static List<Contact> getContacts() {
+        return [SELECT Id, FirstName, LastName, Email, Phone, Fax FROM Contact ORDER BY CREATEDDATE DESC LIMIT 10];
+    }
+    
+    @AuraEnabled
+    public static Contact saveContact(Contact contact) {
+        upsert contact;
+        return contact;
+    }
+    
+}
