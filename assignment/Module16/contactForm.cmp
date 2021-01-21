@@ -30,7 +30,7 @@
                         <lightning:input aura:id="contactform" label="Lastname"
                                          name="lastname"
                                          value="{!v.newContact.LastName}"
-                                         required="true"/>
+                                         />
                         <lightning:input aura:id="contactform" label="Email"
                                          name="email"
                                          value="{!v.newContact.Email}"
